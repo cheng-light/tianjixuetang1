@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tianji Academy</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      const token = localStorage.getItem('token')
+      if (location.pathname === '/' && !token) {
+        location.replace('/auth.html')
+      } else {
+        import('/src/main.js')
+      }
+    </script>
+  </body>
+</html>

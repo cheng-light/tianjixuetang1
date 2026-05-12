@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>天机学堂登录注册</title>
+    <style>
+      :root {
+        --bg-1: #050816;
+        --bg-2: #0b1538;
+        --bg-3: #07101f;
+        --primary: #165dff;
+        --primary-soft: rgba(22, 93, 255, 0.34);
+        --accent: #ff8a1f;
+        --text: rgba(255, 255, 255, 0.94);
+        --muted: rgba(255, 255, 255, 0.62);
+        --danger: #ff5f72;
+        --glass: rgba(255, 255, 255, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.18);
+        --shadow: 0 28px 80px rgba(0, 0, 0, 0.46);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        overflow-x: hidden;
+        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 18% 18%, rgba(22, 93, 255, 0.42), transparent 30%),
+          radial-gradient(circle at 82% 22%, rgba(255, 138, 31, 0.24), transparent 28%),
+          linear-gradient(135deg, var(--bg-1), var(--bg-2) 48%, var(--bg-3));
+        animation: bg-flow 12s ease-in-out infinite alternate;
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        opacity: 0.7;
+        filter: blur(26px);
+        pointer-events: none;
+      }
+
+      body::before {
+        left: -90px;
+        top: 12%;
+        background: rgba(22, 93, 255, 0.25);
+        animation: float-a 9s ease-in-out infinite;
+      }
+
+      body::after {
+        right: -90px;
+        bottom: 10%;
+        background: rgba(255, 138, 31, 0.2);
+        animation: float-b 11s ease-in-out infinite;
+      }
+
+      .page {
+        width: min(1080px, calc(100vw - 32px));
+        min-height: min(720px, calc(100vh - 32px));
+        display: grid;
+        grid-template-columns: 1fr 440px;
+        gap: 28px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .intro,
+      .auth-card {
+        border: 1px solid var(--glass-border);
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.06));
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(28px) saturate(140%);
+        -webkit-backdrop-filter: blur(28px) saturate(140%);
+      }
+
+      .intro {
+        min-height: 520px;
+        padding: 48px;
+        border-radius: 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .intro::after {
+        content: "";
+        position: absolute;
+        inset: auto -20% -35% 20%;
+        height: 260px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+        transform: rotate(-10deg);
+      }
+
+      .badge {
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      h1 {
+        max-width: 640px;
+        margin: 26px 0 16px;
+        font-size: clamp(34px, 5vw, 58px);
+        line-height: 1.05;
+      }
+
+      p,
+      .hint,
+      .terms {
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .stat {
+        padding: 18px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .stat strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 24px;
+      }
+
+      .auth-card {
+        position: relative;
+        padding: 28px;
+        border-radius: 28px;
+        overflow: hidden;
+      }
+
+      .auth-card::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        pointer-events: none;
+      }
+
+      .auth-card:hover::before {
+        opacity: 1;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .logo {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--primary), #65a7ff);
+        box-shadow: 0 12px 28px rgba(22, 93, 255, 0.35);
+        font-weight: 800;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 5px;
+        margin-bottom: 24px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .tab {
+        height: 44px;
+        border: 0;
+        border-radius: 14px;
+        color: var(--muted);
+        background: transparent;
+        cursor: pointer;
+        font-size: 15px;
+        transition: all 0.25s ease;
+      }
+
+      .tab.active {
+        color: #fff;
+        background: linear-gradient(135deg, rgba(22, 93, 255, 0.92), rgba(255, 138, 31, 0.78));
+        box-shadow: 0 10px 28px rgba(22, 93, 255, 0.28);
+      }
+
+      .form {
+        display: none;
+      }
+
+      .form.active {
+        display: block;
+        animation: fade-up 0.35s ease;
+      }
+
+      .field {
+        position: relative;
+        margin-bottom: 20px;
+      }
+
+      .field input {
+        width: 100%;
+        height: 56px;
+        padding: 22px 16px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 18px;
+        outline: 0;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      }
+
+      .field label {
+        position: absolute;
+        left: 16px;
+        top: 17px;
+        color: rgba(255, 255, 255, 0.56);
+        pointer-events: none;
+        transition: all 0.22s ease;
+      }
+
+      .field input:focus,
+      .field input:not(:placeholder-shown) {
+        border-color: rgba(22, 93, 255, 0.82);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 0 4px var(--primary-soft), 0 0 28px rgba(22, 93, 255, 0.22);
+      }
+
+      .field input:focus + label,
+      .field input:not(:placeholder-shown) + label {
+        top: 8px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      .error {
+        min-height: 18px;
+        margin: 6px 0 0 4px;
+        color: var(--danger);
+        font-size: 12px;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 4px 0 20px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .row a,
+      .terms a {
+        color: #9ec1ff;
+        text-decoration: none;
+      }
+
+      .check {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .submit {
+        width: 100%;
+        height: 54px;
+        border: 0;
+        border-radius: 18px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary), #5b8cff 45%, var(--accent));
+        box-shadow: 0 18px 38px rgba(22, 93, 255, 0.34);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+        animation: breathe 2.8s ease-in-out infinite;
+      }
+
+      .submit:hover {
+        transform: translateY(-2px) scale(1.025);
+        filter: brightness(1.08);
+        box-shadow: 0 24px 48px rgba(22, 93, 255, 0.46);
+      }
+
+      .submit:disabled {
+        cursor: wait;
+        opacity: 0.75;
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 24px 0 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .socials {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .social {
+        height: 46px;
+        display: grid;
+        place-items: center;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .social:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.14);
+        box-shadow: 0 12px 30px rgba(255, 255, 255, 0.1);
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        top: 24px;
+        z-index: 9;
+        transform: translateX(-50%) translateY(-20px);
+        padding: 12px 18px;
+        border-radius: 16px;
+        opacity: 0;
+        color: #fff;
+        background: rgba(12, 18, 38, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(18px);
+        transition: all 0.25s ease;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      @keyframes bg-flow {
+        from { background-position: 0% 50%; }
+        to { background-position: 100% 50%; }
+      }
+
+      @keyframes float-a {
+        50% { transform: translate(32px, 38px) scale(1.08); }
+      }
+
+      @keyframes float-b {
+        50% { transform: translate(-36px, -28px) scale(1.06); }
+      }
+
+      @keyframes fade-up {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes breathe {
+        50% { box-shadow: 0 20px 52px rgba(22, 93, 255, 0.48); }
+      }
+
+      @media (max-width: 900px) {
+        .page {
+          grid-template-columns: 1fr;
+          padding: 18px 0;
+        }
+
+        .intro {
+          min-height: auto;
+          padding: 30px;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .page {
+          width: min(100vw - 20px, 1080px);
+        }
+
+        .intro,
+        .auth-card {
+          border-radius: 22px;
+          padding: 22px;
+        }
+
+        .row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toast" id="toast"></div>
+
+    <main class="page">
+      <section class="intro">
+        <div>
+          <div class="badge">天机学堂 · 企业学习平台</div>
+          <h1>课程学习、学习进度、作业提交与考试认证统一入口。</h1>
+          <p>该页面已接入现有后端登录与注册接口。登录成功后会写入与 Vue 主应用一致的本地存储数据，并自动跳转进入系统。</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>24/7</strong><span>全天在线</span></div>
+          <div class="stat"><strong>JWT</strong><span>安全认证</span></div>
+          <div class="stat"><strong>100%</strong><span>全端适配</span></div>
+        </div>
+      </section>
+
+      <section class="auth-card">
+        <div class="brand">
+          <div class="logo">T</div>
+          <div>
+            <strong>天机学堂</strong>
+            <div class="hint">登录后继续你的学习计划。</div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-target="loginForm" type="button">登录</button>
+          <button class="tab" data-target="registerForm" type="button">注册</button>
+        </div>
+
+        <form class="form active" id="loginForm" novalidate>
+          <div class="field">
+            <input id="loginUsername" name="username" placeholder=" " autocomplete="username" />
+            <label for="loginUsername">用户名</label>
+            <div class="error"></div>
+          </div>
+          <div class="field">
+            <input id="loginPassword" name="password" type="password" placeholder=" " autocomplete="current-password" />
+            <label for="loginPassword">密码</label>
+            <div class="error"></div>
+          </div>
+          <div class="row">
+            <label class="check"><input id="remember" type="checkbox" />记住密码</label>
+            <a href="#" id="forgotLink">忘记密码？</a>
+          </div>
+          <button class="submit" type="submit" id="loginButton">立即登录</button>
+          <div class="divider">快捷登录</div>
+          <div class="socials">
+            <button class="social" type="button" title="微信">微信</button>
+            <button class="social" type="button" title="GitHub">GitHub</button>
+            <button class="social" type="button" title="邮箱">邮箱</button>
+          </div>
+        </form>
+
+        <form class="form" id="registerForm" novalidate>
+          <div class="field">
+            <input id="regUsername" name="username" placeholder=" " autocomplete="username" />
+            <label for="regUsername">用户名</label>
+            <div class="error"></div>
+          </div>
+          <div class="field">
+            <input id="regEmail" name="email" placeholder=" " autocomplete="email" />
+            <label for="regEmail">邮箱</label>
+            <div class="error"></div>
+          </div>
+          <div class="field">
+            <input id="regPassword" name="password" type="password" placeholder=" " autocomplete="new-password" />
+            <label for="regPassword">密码</label>
+            <div class="error"></div>
+          </div>
+          <div class="field">
+            <input id="regConfirm" name="confirm" type="password" placeholder=" " autocomplete="new-password" />
+            <label for="regConfirm">确认密码</label>
+            <div class="error"></div>
+          </div>
+          <p class="terms">注册成功后将直接进入学习系统。</p>
+          <button class="submit" type="submit" id="registerButton">创建账号</button>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      const $ = (selector, parent = document) => parent.querySelector(selector)
+      const $$ = (selector, parent = document) => Array.from(parent.querySelectorAll(selector))
+      const toast = $('#toast')
+
+      function showToast(message) {
+        toast.textContent = message
+        toast.classList.add('show')
+        clearTimeout(showToast.timer)
+        showToast.timer = setTimeout(() => toast.classList.remove('show'), 2400)
+      }
+
+      function setError(input, message) {
+        const error = input.closest('.field').querySelector('.error')
+        error.textContent = message || ''
+      }
+
+      function validate(form) {
+        let ok = true
+        $$('input', form).forEach((input) => {
+          if (input.type === 'checkbox') return
+          const value = input.value.trim()
+          let message = ''
+          if (!value) message = '该项不能为空'
+          if (input.name === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) message = '邮箱格式不正确'
+          if (input.name === 'password' && value && value.length < 6) message = '密码至少 6 位'
+          if (input.name === 'confirm' && value !== $('#regPassword').value) message = '两次密码不一致'
+          setError(input, message)
+          if (message) ok = false
+        })
+        return ok
+      }
+
+      $$('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          $$('.tab').forEach((item) => item.classList.remove('active'))
+          $$('.form').forEach((item) => item.classList.remove('active'))
+          tab.classList.add('active')
+          $('#' + tab.dataset.target).classList.add('active')
+        })
+      })
+
+      $$('input').forEach((input) => {
+        input.addEventListener('input', () => setError(input, ''))
+      })
+
+      $('#forgotLink').addEventListener('click', (event) => {
+        event.preventDefault()
+        showToast('请联系管理员重置密码')
+      })
+
+      $$('.social').forEach((button) => {
+        button.addEventListener('click', () => {
+          showToast(button.textContent + ' 登录暂未接入')
+        })
+      })
+
+      const saved = JSON.parse(localStorage.getItem('tj_remember') || 'null')
+      if (saved) {
+        $('#loginUsername').value = saved.username || ''
+        $('#loginPassword').value = saved.password || ''
+        $('#remember').checked = true
+      } else {
+        $('#loginUsername').value = 'admin'
+        $('#loginPassword').value = '123456'
+      }
+
+      $('#loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const form = event.currentTarget
+        if (!validate(form)) return
+
+        const loginButton = $('#loginButton')
+        const body = {
+          username: $('#loginUsername').value.trim(),
+          password: $('#loginPassword').value
+        }
+
+        loginButton.disabled = true
+        loginButton.textContent = '登录中...'
+
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          })
+
+          const result = await response.json()
+          if (!response.ok || result.code !== 200) {
+            throw new Error(result.message || '登录失败')
+          }
+
+          localStorage.setItem('token', result.data.token)
+          localStorage.setItem('user', JSON.stringify({
+            userId: result.data.userId,
+            username: result.data.username,
+            nickname: result.data.nickname
+          }))
+          localStorage.setItem('roles', JSON.stringify(result.data.roles || []))
+
+          if ($('#remember').checked) {
+            localStorage.setItem('tj_remember', JSON.stringify(body))
+          } else {
+            localStorage.removeItem('tj_remember')
+          }
+
+          showToast('登录成功')
+          setTimeout(() => {
+            location.href = '/dashboard'
+          }, 600)
+        } catch (error) {
+          showToast(error.message || '无法连接登录服务')
+        } finally {
+          loginButton.disabled = false
+          loginButton.textContent = '立即登录'
+        }
+      })
+
+      $('#registerForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        if (!validate(event.currentTarget)) return
+        const registerButton = $('#registerButton')
+        registerButton.disabled = true
+        registerButton.textContent = '创建中...'
+
+        try {
+          const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: $('#regUsername').value.trim(),
+              email: $('#regEmail').value.trim(),
+              password: $('#regPassword').value
+            })
+          })
+
+          const result = await response.json()
+          if (!response.ok || result.code !== 200) {
+            throw new Error(result.message || '注册失败')
+          }
+
+          localStorage.setItem('token', result.data.token)
+          localStorage.setItem('user', JSON.stringify({
+            userId: result.data.userId,
+            username: result.data.username,
+            nickname: result.data.nickname
+          }))
+          localStorage.setItem('roles', JSON.stringify(result.data.roles || []))
+          showToast('注册成功')
+          setTimeout(() => {
+            location.href = '/dashboard'
+          }, 600)
+        } catch (error) {
+          showToast(error.message || '无法连接注册服务')
+        } finally {
+          registerButton.disabled = false
+          registerButton.textContent = '创建账号'
+        }
+      })
+    </script>
+  </body>
+</html>
